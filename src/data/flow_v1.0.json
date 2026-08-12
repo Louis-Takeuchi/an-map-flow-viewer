@@ -1,0 +1,283 @@
+{
+  "entry_node_id": "em_who",
+  "nodes": [
+    {
+      "node_id": "em_who",
+      "response_type": "objective_demographic",
+      "question_text": "どなたのことについてですか？",
+      "flow_kind": "emergency",
+      "options": [
+        {"option_id": "child_u15", "option_text": "15歳未満のお子さん", "next_node_id": "em_redflags"},
+        {"option_id": "adult",     "option_text": "大人（15〜64歳）",   "next_node_id": "em_redflags"},
+        {"option_id": "elderly",   "option_text": "高齢者（65歳以上）", "next_node_id": "em_redflags"},
+        {"option_id": "pregnant",  "option_text": "妊娠中の方",         "next_node_id": "em_pregnancy_redflags"}
+      ]
+    },
+    {
+      "node_id": "em_pregnancy_redflags",
+      "response_type": "red_flag_screen",
+      "question_text": "次のうち、当てはまるものはありますか？（妊娠中の緊急サイン）",
+      "flow_kind": "emergency",
+      "options": [
+        {"option_id": "genital_bleeding",       "option_text": "大量の性器出血",       "next_node_id": null, "triage_level": "red", "outcome_id": "out_red"},
+        {"option_id": "labor_concern",          "option_text": "陣痛・破水の疑い",     "next_node_id": null, "triage_level": "red", "outcome_id": "out_red"},
+        {"option_id": "fetal_movement_reduced", "option_text": "胎動の減少・消失",     "next_node_id": null, "triage_level": "red", "outcome_id": "out_red"},
+        {"option_id": "none",                   "option_text": "いずれもない",         "next_node_id": "em_redflags"}
+      ]
+    },
+    {
+      "node_id": "em_redflags",
+      "response_type": "red_flag_screen",
+      "question_text": "次のうち、当てはまるものはありますか？（致死的徴候）",
+      "flow_kind": "emergency",
+      "options": [
+        {"option_id": "consciousness", "option_text": "意識がない・意識が混濁している",         "next_node_id": null, "triage_level": "red", "outcome_id": "out_red"},
+        {"option_id": "breathing",    "option_text": "呼吸がおかしい・呼吸が止まっている",     "next_node_id": null, "triage_level": "red", "outcome_id": "out_red"},
+        {"option_id": "seizure",      "option_text": "けいれん・ひきつけが起きている",         "next_node_id": null, "triage_level": "red", "outcome_id": "out_red"},
+        {"option_id": "bleeding",     "option_text": "大量出血が止まらない",                   "next_node_id": null, "triage_level": "red", "outcome_id": "out_red"},
+        {"option_id": "chest_pain",   "option_text": "胸の激しい痛みや圧迫感",                 "next_node_id": null, "triage_level": "red", "outcome_id": "out_red"},
+        {"option_id": "neuro",        "option_text": "急に手足が動かない・言葉が出ない",       "next_node_id": null, "triage_level": "red", "outcome_id": "out_red"},
+        {"option_id": "none",         "option_text": "いずれもない",                           "next_node_id": "em_symptom"}
+      ]
+    },
+    {
+      "node_id": "em_symptom",
+      "response_type": "entry_intent",
+      "question_text": "いちばん近い症状はどれですか？",
+      "flow_kind": "emergency",
+      "options": [
+        {"option_id": "fever",              "option_text": "発熱・風邪症状",               "next_node_id": "em_fever_course"},
+        {"option_id": "breath_distress",    "option_text": "息苦しさ・呼吸困難",           "next_node_id": "em_mobility"},
+        {"option_id": "chest",              "option_text": "胸の症状（痛み・動悸）",       "next_node_id": "em_mobility"},
+        {"option_id": "headache",           "option_text": "頭痛",                         "next_node_id": "em_headache"},
+        {"option_id": "gi",                 "option_text": "腹部症状（嘔吐・下痢）",       "next_node_id": "em_abdomen"},
+        {"option_id": "abdominal_pain",     "option_text": "腹痛",                         "next_node_id": "em_abdomen_pain"},
+        {"option_id": "injury",             "option_text": "ケガ・やけど・打撲",           "next_node_id": "em_injury"},
+        {"option_id": "ent",                "option_text": "目・耳・鼻・喉の症状",         "next_node_id": "em_ent"},
+        {"option_id": "urine",              "option_text": "尿の異常",                     "next_node_id": "em_urine"},
+        {"option_id": "bleeding_non_major", "option_text": "出血（吐血・下血・性器出血）", "next_node_id": "em_bleeding_nonemerge"},
+        {"option_id": "mental",             "option_text": "精神症状・こころの不調",       "next_node_id": "em_mental"},
+        {"option_id": "other",              "option_text": "その他・わからない",            "next_node_id": null, "outcome_id": "out_phone_consult"}
+      ]
+    },
+    {
+      "node_id": "em_fever_course",
+      "response_type": "entry_intent",
+      "question_text": "経過はどれに近いですか？（発熱・風邪症状）",
+      "flow_kind": "emergency",
+      "options": [
+        {"option_id": "worsening",    "option_text": "悪化している・ひどくなっている", "next_node_id": "em_mobility"},
+        {"option_id": "acute_clear",  "option_text": "急に始まったがはっきりしている", "next_node_id": null, "triage_level": "green", "outcome_id": "out_green"},
+        {"option_id": "prolonged",    "option_text": "長引いているが落ち着いている",   "next_node_id": null, "triage_level": "white", "outcome_id": "out_white"}
+      ]
+    },
+    {
+      "node_id": "em_headache",
+      "response_type": "entry_intent",
+      "question_text": "頭痛の様子は？",
+      "flow_kind": "emergency",
+      "options": [
+        {"option_id": "thunderclap",   "option_text": "突然バットで殴られたような激しい頭痛", "next_node_id": null, "triage_level": "red",   "outcome_id": "out_red"},
+        {"option_id": "neuro_signs",   "option_text": "麻痺・視野異常・言語障害を伴う",       "next_node_id": "em_mobility"},
+        {"option_id": "unusual_mild",  "option_text": "いつもと違うが軽度",                   "next_node_id": null, "triage_level": "green", "outcome_id": "out_green"},
+        {"option_id": "usual",         "option_text": "いつもの頭痛",                         "next_node_id": null, "triage_level": "white", "outcome_id": "out_white"}
+      ]
+    },
+    {
+      "node_id": "em_abdomen",
+      "response_type": "entry_intent",
+      "question_text": "お腹の症状の強さは？（嘔吐・下痢）",
+      "flow_kind": "emergency",
+      "options": [
+        {"option_id": "bloody_stool",  "option_text": "血便・血が混じった嘔吐", "next_node_id": "em_mobility"},
+        {"option_id": "dehydration",   "option_text": "水分が全く取れない・脱水が心配", "next_node_id": "em_mobility"},
+        {"option_id": "moderate",      "option_text": "中程度（水分は取れている）", "next_node_id": null, "triage_level": "green", "outcome_id": "out_green"},
+        {"option_id": "mild",          "option_text": "軽度（様子を見られる）",     "next_node_id": null, "triage_level": "white", "outcome_id": "out_white"}
+      ]
+    },
+    {
+      "node_id": "em_abdomen_pain",
+      "response_type": "entry_intent",
+      "question_text": "腹痛の強さと様子は？",
+      "flow_kind": "emergency",
+      "options": [
+        {"option_id": "severe",            "option_text": "激しい腹痛で動けない",             "next_node_id": "em_mobility"},
+        {"option_id": "appendix_concern",  "option_text": "右下腹部の痛み・虫垂炎が心配",   "next_node_id": "em_mobility"},
+        {"option_id": "moderate",          "option_text": "中程度（我慢できる）",             "next_node_id": null, "triage_level": "green", "outcome_id": "out_green"},
+        {"option_id": "mild",              "option_text": "軽度（様子を見られる）",           "next_node_id": null, "triage_level": "white", "outcome_id": "out_white"}
+      ]
+    },
+    {
+      "node_id": "em_injury",
+      "response_type": "entry_intent",
+      "question_text": "ケガ・やけど・打撲の状況は？",
+      "flow_kind": "emergency",
+      "options": [
+        {"option_id": "severe_burn",       "option_text": "広範囲のやけど・重症熱傷", "next_node_id": null, "triage_level": "red",   "outcome_id": "out_red"},
+        {"option_id": "fracture_concern",  "option_text": "骨折が疑われる・変形がある", "next_node_id": "em_mobility"},
+        {"option_id": "head_trauma",       "option_text": "頭部外傷・意識への影響が心配", "next_node_id": "em_mobility"},
+        {"option_id": "minor",             "option_text": "軽度のケガ・擦り傷程度",   "next_node_id": null, "triage_level": "green", "outcome_id": "out_green"}
+      ]
+    },
+    {
+      "node_id": "em_ent",
+      "response_type": "entry_intent",
+      "question_text": "目・耳・鼻・喉の症状の様子は？",
+      "flow_kind": "emergency",
+      "options": [
+        {"option_id": "vision_sudden",   "option_text": "突然の視力低下・視野欠損", "next_node_id": "em_mobility"},
+        {"option_id": "airway_concern",  "option_text": "喉の腫れで呼吸・嚥下が困難", "next_node_id": null, "triage_level": "red",   "outcome_id": "out_red"},
+        {"option_id": "pain_moderate",   "option_text": "中程度の痛み・不快感",     "next_node_id": null, "triage_level": "green", "outcome_id": "out_green"},
+        {"option_id": "mild",            "option_text": "軽度の症状",               "next_node_id": null, "triage_level": "white", "outcome_id": "out_white"}
+      ]
+    },
+    {
+      "node_id": "em_urine",
+      "response_type": "entry_intent",
+      "question_text": "尿の異常の様子は？",
+      "flow_kind": "emergency",
+      "options": [
+        {"option_id": "hematuria",  "option_text": "血尿（尿に血が混じる）",     "next_node_id": "em_mobility"},
+        {"option_id": "anuria",     "option_text": "尿が全く出ない",             "next_node_id": "em_mobility"},
+        {"option_id": "dysuria",    "option_text": "排尿時の痛み・残尿感",       "next_node_id": null, "triage_level": "green", "outcome_id": "out_green"},
+        {"option_id": "mild",       "option_text": "軽度の違和感",               "next_node_id": null, "triage_level": "white", "outcome_id": "out_white"}
+      ]
+    },
+    {
+      "node_id": "em_bleeding_nonemerge",
+      "response_type": "entry_intent",
+      "question_text": "出血の様子は？（吐血・下血・性器出血）",
+      "flow_kind": "emergency",
+      "options": [
+        {"option_id": "upper_gi",       "option_text": "吐血（鮮血・コーヒー残渣様）",   "next_node_id": null, "triage_level": "red",   "outcome_id": "out_red"},
+        {"option_id": "genital_heavy",  "option_text": "大量の性器出血",                 "next_node_id": "em_mobility"},
+        {"option_id": "moderate",       "option_text": "中程度の出血・少量の下血",       "next_node_id": "em_mobility"},
+        {"option_id": "mild",           "option_text": "少量・点状の出血",               "next_node_id": null, "triage_level": "green", "outcome_id": "out_green"}
+      ]
+    },
+    {
+      "node_id": "em_mental",
+      "response_type": "entry_intent",
+      "question_text": "精神症状の状況は？",
+      "flow_kind": "emergency",
+      "options": [
+        {"option_id": "immediate_risk",   "option_text": "自傷・他害の差し迫ったリスクがある", "next_node_id": null, "triage_level": "red",    "outcome_id": "out_red"},
+        {"option_id": "ideation",         "option_text": "死にたい・消えたい気持ちがある",     "next_node_id": null, "triage_level": "yellow", "outcome_id": "out_mental_consult"},
+        {"option_id": "panic",            "option_text": "パニック・強い不安・幻覚",           "next_node_id": null, "triage_level": "yellow", "outcome_id": "out_mental_consult"},
+        {"option_id": "mild_depression",  "option_text": "気分の落ち込み・軽度の不調",         "next_node_id": null, "triage_level": "green",  "outcome_id": "out_green"}
+      ]
+    },
+    {
+      "node_id": "em_mobility",
+      "response_type": "mobility_self_report",
+      "question_text": "今、自宅から医療機関まで移動できそうですか？",
+      "flow_kind": "emergency",
+      "options": [
+        {"option_id": "ok",      "option_text": "移動できる",             "next_node_id": null, "triage_level": "yellow", "outcome_id": "out_yellow"},
+        {"option_id": "hard",    "option_text": "移動が難しい・つらい",   "next_node_id": null, "triage_level": "yellow", "outcome_id": "out_yellow_home"},
+        {"option_id": "unclear", "option_text": "わからない",             "next_node_id": null, "triage_level": "yellow", "outcome_id": "out_yellow"}
+      ]
+    },
+
+    {
+      "node_id": "mf_screen",
+      "response_type": "red_flag_screen",
+      "question_text": "今日、いつもと違う症状はありますか？",
+      "flow_kind": "medicine",
+      "options": [
+        {"option_id": "chest",    "option_text": "胸の痛み・呼吸困難",     "next_node_id": null, "triage_level": "red", "outcome_id": "out_escalate"},
+        {"option_id": "neuro",    "option_text": "手足の麻痺・言語障害",   "next_node_id": null, "triage_level": "red", "outcome_id": "out_escalate"},
+        {"option_id": "severe",   "option_text": "意識の変化・強い苦しさ", "next_node_id": null, "triage_level": "red", "outcome_id": "out_escalate"},
+        {"option_id": "gi_fever", "option_text": "急な腹痛・高熱",         "next_node_id": null, "triage_level": "red", "outcome_id": "out_escalate"},
+        {"option_id": "ok",       "option_text": "いずれもない",            "next_node_id": "mf_type"}
+      ]
+    },
+    {
+      "node_id": "mf_type",
+      "response_type": "entry_intent",
+      "question_text": "どのようなお薬のご用件ですか？",
+      "flow_kind": "medicine",
+      "options": [
+        {"option_id": "chronic",    "option_text": "慢性疾患の定期処方",         "next_node_id": "mf_gp"},
+        {"option_id": "acute_mild", "option_text": "急性症状（軽度）の処方",     "next_node_id": "mf_gp"},
+        {"option_id": "first",      "option_text": "初めての症状・初診処方",     "next_node_id": null, "outcome_id": "out_done"},
+        {"option_id": "controlled", "option_text": "向精神薬・麻薬系の処方",     "next_node_id": null, "outcome_id": "out_hospital"},
+        {"option_id": "unknown",    "option_text": "わからない・その他",         "next_node_id": null, "outcome_id": "out_done"}
+      ]
+    },
+    {
+      "node_id": "mf_gp",
+      "response_type": "clinical_history",
+      "question_text": "かかりつけ医（いつも通う医療機関）はありますか？",
+      "flow_kind": "medicine",
+      "options": [
+        {"option_id": "regular",    "option_text": "いつも通っているかかりつけ医がある", "next_node_id": null, "outcome_id": "out_done"},
+        {"option_id": "sometimes",  "option_text": "時々通う医療機関がある",             "next_node_id": null, "outcome_id": "out_done"},
+        {"option_id": "none",       "option_text": "かかりつけ医がいない",               "next_node_id": null, "outcome_id": "out_done"}
+      ]
+    },
+
+    {
+      "node_id": "hp_screen",
+      "response_type": "red_flag_screen",
+      "question_text": "今、次のような症状はありますか？（緊急症状スクリーニング）",
+      "flow_kind": "hospital",
+      "options": [
+        {"option_id": "consciousness",  "option_text": "意識がない・ぐったりしている",         "next_node_id": null, "triage_level": "red", "outcome_id": "hp_escalate"},
+        {"option_id": "chest_breath",   "option_text": "胸の痛み・呼吸困難",                   "next_node_id": null, "triage_level": "red", "outcome_id": "hp_escalate"},
+        {"option_id": "neuro",          "option_text": "急に手足が動かない・言葉が出ない",     "next_node_id": null, "triage_level": "red", "outcome_id": "hp_escalate"},
+        {"option_id": "severe",         "option_text": "強い症状で全く動けない",               "next_node_id": null, "triage_level": "red", "outcome_id": "hp_escalate"},
+        {"option_id": "ok",             "option_text": "いずれもない",                         "next_node_id": "hp_who"}
+      ]
+    },
+    {
+      "node_id": "hp_who",
+      "response_type": "entry_intent",
+      "question_text": "誰が受診しますか？",
+      "flow_kind": "hospital",
+      "options": [
+        {"option_id": "child",   "option_text": "子ども（15歳未満）",   "next_node_id": "hp_symptom"},
+        {"option_id": "adult",   "option_text": "大人（15〜64歳）",     "next_node_id": "hp_symptom"},
+        {"option_id": "elderly", "option_text": "高齢者（65歳以上）",   "next_node_id": "hp_symptom"},
+        {"option_id": "family",  "option_text": "家族の代わりに調べている", "next_node_id": "hp_symptom"}
+      ]
+    },
+    {
+      "node_id": "hp_symptom",
+      "response_type": "entry_intent",
+      "question_text": "主な症状は？（いちばん近いもの）",
+      "flow_kind": "hospital",
+      "options": [
+        {"option_id": "fever",   "option_text": "発熱・風邪症状",           "next_node_id": "hp_when"},
+        {"option_id": "gi",      "option_text": "腹部症状（嘔吐・下痢）",   "next_node_id": "hp_when"},
+        {"option_id": "injury",  "option_text": "ケガ・打撲",               "next_node_id": "hp_when"},
+        {"option_id": "pain",    "option_text": "痛み（頭・腹・腰など）",   "next_node_id": "hp_when"},
+        {"option_id": "ent",     "option_text": "目・耳・鼻・喉の症状",     "next_node_id": "hp_when"},
+        {"option_id": "other",   "option_text": "その他・わからない",       "next_node_id": "hp_when"}
+      ]
+    },
+    {
+      "node_id": "hp_when",
+      "response_type": "subjective_preference",
+      "question_text": "いつ受診したいですか？",
+      "flow_kind": "hospital",
+      "options": [
+        {"option_id": "now",      "option_text": "今すぐ（数時間以内）",   "next_node_id": "hp_facility"},
+        {"option_id": "today",    "option_text": "今日中",                 "next_node_id": "hp_facility"},
+        {"option_id": "week",     "option_text": "今週中",                 "next_node_id": "hp_facility"},
+        {"option_id": "weekday",  "option_text": "平日でよい",             "next_node_id": "hp_facility"}
+      ]
+    },
+    {
+      "node_id": "hp_facility",
+      "response_type": "subjective_preference",
+      "question_text": "重視する条件はありますか？（任意）",
+      "flow_kind": "hospital",
+      "options": [
+        {"option_id": "night_emergency", "option_text": "夜間・救急対応",   "next_node_id": null, "outcome_id": "hp_done"},
+        {"option_id": "pediatrics",      "option_text": "小児科あり",       "next_node_id": null, "outcome_id": "hp_done"},
+        {"option_id": "any",             "option_text": "特にない",         "next_node_id": null, "outcome_id": "hp_done"}
+      ]
+    }
+  ]
+}
