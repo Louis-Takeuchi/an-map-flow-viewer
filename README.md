@@ -1,139 +1,110 @@
 # Anshin Map Flow Viewer
 
-安心マップの問診・トリアージフローを、俯瞰・トレースの2方式で可視化するWebアプリです。
+安心マップの問診・分岐構造を、人間が視覚的に確認するための静的フロービューワーです。
 
-## 1. Overview
+[![Validate and build](https://github.com/Louis-Takeuchi/an-map-flow-viewer/actions/workflows/ci.yml/badge.svg)](https://github.com/Louis-Takeuchi/an-map-flow-viewer/actions/workflows/ci.yml)　[Live Viewer](https://an-map-flow-viewer.vercel.app/)
 
-このRepositoryは、受診案内サービス「安心マップ」の質問、回答、次の質問、最終的な案内のつながりを、人間が視覚的に確認するための静的フロービューワーです。JSONとして定義された問診フローをブラウザ上に表示し、全体構造と個別の回答経路を確認できます。
+![救急フローを表示したOverviewモード](docs/assets/flow-viewer-overview.jpg)
 
-安心マップ本体や医療診断システムではありません。
+## このRepositoryについて
 
-## 2. Why this viewer exists
+受診案内サービス「安心マップ」で設計した質問、選択肢、遷移、最終結果を、Repository内のJSONからグラフとして表示します。問診ロジックをコード内部だけに閉じず、第三者が全体構造と具体的な回答経路を確認できる状態にするための技術成果物です。
 
-問診ロジックを実装コードの中だけに置くと、個々の分岐と全体像を同時に確認することが難しくなります。このviewerは、安心マップの設計をブラックボックスにせず、第三者が全体構造と個別経路の両方を確認できる状態にするために作成しました。
+安心マップ本体、AI／自動診断システム、患者情報管理システム、医療機関推薦サービス、実運用バックエンドではありません。
 
-## 3. What you can inspect
+## 確認できること
 
-- 救急・薬・病院案内の3種類のフロー
-- すべての質問ノードと質問文
-- 各質問の選択肢、遷移先、最終結果
-- フロー全体の分岐構造
-- 回答を一つずつ選んだ場合の個別経路
-
-## 4. Two viewing modes
-
-| モード | 確認できること |
+| 表示 | 用途 |
 | --- | --- |
-| Overview / 俯瞰 | 選択中のフロー全体をグラフで表示します。ノードを選ぶと、質問文、選択肢、遷移先、結果IDを確認できます。 |
-| Trace / トレース | 画面上で回答を選び、開始ノードから一つの結果までの経路をたどります。通過したノードとエッジが強調されます。 |
+| Overview / 俯瞰 | 全質問、選択肢、遷移、最終結果をグラフで確認します。 |
+| Trace / トレース | 回答を一つずつ選び、`question → choice → next question → … → outcome`という一つの経路を再現します。 |
+| Node detail | 任意の質問・結果ノードを選び、質問文、選択肢、遷移先、トリアージ表示、`outcome_id`を確認します。 |
 
-## 5. Flow structure
+## 実装データ
 
-数値は[`src/data/flow_v1.0.json`](src/data/flow_v1.0.json)から集計しています。
+数値は[`src/data/flow_v1.0.json`](src/data/flow_v1.0.json)から機械的に集計し、`npm run validate:flows`でも照合します。
 
-| フロー | 開始ノード | 質問ノード数 | 結果ノード数 |
+| フロー | 開始ノード | 質問数 | 一意な結果数 |
 | --- | --- | ---: | ---: |
 | 救急（`emergency`） | `em_who` | 14 | 7 |
 | 薬（`medicine`） | `mf_screen` | 3 | 3 |
 | 病院案内（`hospital`） | `hp_screen` | 5 | 2 |
 | **合計** | — | **22** | **12** |
 
-結果ノード数は、各フロー内で参照される一意な`outcome_id`の数です。質問から次の質問へは`next_node_id`、結果へは`outcome_id`で接続します。
+実装されている12の結果IDは、次の表示名に対応します。
 
-## 6. Result categories
-
-実装されている結果IDと表示名は次のとおりです。
-
-| フロー | 結果カテゴリ |
+| フロー | 結果表示 |
 | --- | --- |
 | 救急 | 119番通報、急性期受診、往診・オンライン診療、一般外来、セルフケア、精神科相談、#7119 / #8000 |
 | 薬 | 救急フローへ、完了、病院紹介 |
 | 病院案内 | 救急フローへ、受診案内完了 |
 
-RED・YELLOW・GREEN・WHITEなどの色は、グラフ上で結果カテゴリを識別しやすくするための表示です。色だけに依存せず、結果名とIDも併記しています。
+RED・YELLOW・GREEN・WHITEは結果を識別するための4種類の表示設定です。色だけでなく、結果名とIDも表示します。
 
-## 7. Technical architecture
+結果の色はJSONの`triage_level`等の表示情報に基づき、未定義時にViewerが医学的意味を補完せず`UNSPECIFIED / 未設定`として中立表示します。
+
+## 技術構成
 
 ```text
 JSON flow data
-  → React components
-  → Dagre automatic layout
-  → React Flow visualization
+      ↓
+React state and graph generation
+      ↓
+Dagre layout
+      ↓
+React Flow
+      ↓
+Overview / Trace / Detail
 ```
 
-- **React**: 画面と回答状態の管理
-- **Vite**: ローカル開発と本番用ビルド
-- **React Flow (`@xyflow/react`)**: ノード、エッジ、ズーム、ミニマップの表示
-- **Dagre (`@dagrejs/dagre`)**: 上から下へ並ぶグラフ座標の計算
-- **JSON**: 質問、選択肢、遷移先、結果IDの定義
+- React 18: UIとTrace回答履歴
+- Vite 5: 開発サーバーと静的ビルド
+- React Flow (`@xyflow/react`): ノード、エッジ、操作UI
+- Dagre (`@dagrejs/dagre`): グラフ座標の計算
+- JSON: 質問、選択肢、遷移、結果ID
 
-詳しくは[`docs/ARCHITECTURE.md`](docs/ARCHITECTURE.md)を参照してください。
+詳細は[`docs/ARCHITECTURE.md`](docs/ARCHITECTURE.md)と[`docs/FLOW_DATA_FORMAT.md`](docs/FLOW_DATA_FORMAT.md)を参照してください。
 
-## 8. Data and privacy
+## 検証できる範囲
 
-現在の実装は、Repository内の静的JSONを読み込んで表示します。
+`npm run validate:flows`は、ID重複、必須フィールド、開始ノード、参照先、到達不能な質問／結果、結果に到達しない可能性のある経路を検査します。Overview・Trace・Detailでは、その構造を人間が俯瞰・追跡できます。
 
-- バックエンドAPIへの通信はありません。
-- 入力した回答をサーバーや外部サービスへ送信しません。
-- 医療・診断情報を`localStorage`、Cookie、データベース等へ保存しません。
-- Trace中の回答履歴はReactのメモリ上だけに保持され、再読み込みすると消えます。
+この検証はデータ・グラフ構造の整合性を対象とします。医学的妥当性、診断の正しさ、実運用時の安全性、安心マップ本体の動作を検証・証明するものではありません。範囲の詳細と既知の制約は[`docs/SAFETY_AND_SCOPE.md`](docs/SAFETY_AND_SCOPE.md)に記載しています。
 
-詳細は[`docs/SAFETY_AND_SCOPE.md`](docs/SAFETY_AND_SCOPE.md)を参照してください。
+## Data / Privacy
 
-## 9. Scope and limitations
+アプリケーションコードはRepository内の静的JSONを読み込みます。バックエンドAPI、`fetch`、axios、WebSocket、analytics／telemetry、外部SDKを使用せず、問診回答を外部へ送信しません。
 
-このRepositoryは問診フローを可視化するための技術資料であり、医療診断を提供することを目的としたものではありません。
+Traceの回答履歴はReactのメモリ上だけに保持されます。`localStorage`、`sessionStorage`、IndexedDB、Cookie、データベースには保存せず、再読み込みすると消えます。ホスティング事業者が通常のアクセスログを扱う可能性は、このアプリケーションコードの保証範囲外です。
 
-表示されるフローは、安心マップの設計を説明・確認するためのものであり、このRepository単体を医療判断に利用することを想定していません。医学的妥当性や実運用時の安全性を、このRepositoryが検証・証明するものではありません。
-
-`triage_level`が設定されていない結果では、現在のTrace結果画面がGREEN用の表示設定へフォールバックします。構造確認では結果名と`outcome_id`を参照してください。この表示方針の変更には、設計・内容面の確認が必要です。
-
-## 10. Run locally
+## ローカルで実行
 
 Node.js `^18.0.0 || >=20.0.0`とnpmが必要です。
 
 ```bash
 git clone https://github.com/Louis-Takeuchi/an-map-flow-viewer.git
 cd an-map-flow-viewer
-npm install
+npm ci
+npm run validate:flows
+npm run build
 npm run dev
 ```
 
-構造検証と本番用ビルドは次のコマンドで実行できます。
+`npm run dev`が表示するローカルURLをブラウザで開きます。push／pull request時にもGitHub Actionsが`npm ci`、構造検証、buildを実行します。
 
-```bash
-npm run validate:flows
-npm run build
-```
-
-## 11. Repository structure
+## Repository構成
 
 ```text
 .
-├── docs/                   # 構成・データ形式・対象範囲の説明
-├── scripts/
-│   └── validate-flows.mjs # JSONの構造整合性検証
+├── .github/workflows/ci.yml   # 構造検証とbuildのCI
+├── docs/                      # アーキテクチャ、データ形式、範囲
+├── scripts/validate-flows.mjs # JSON／グラフ構造validator
 ├── src/
-│   ├── components/        # グラフ、詳細、トレースUI
-│   ├── config/            # フローと表示用の共通定義
-│   ├── data/
-│   │   └── flow_v1.0.json # 問診フローの静的データ
-│   ├── hooks/             # グラフ生成とトレース状態
-│   └── App.jsx
+│   ├── components/            # Overview、Trace、Detail UI
+│   ├── config/                # フロー開始点と表示定義
+│   ├── data/flow_v1.0.json    # 問診フローの静的データ
+│   └── hooks/                 # グラフ生成とTrace状態
 └── package.json
 ```
 
-JSONの各フィールドは[`docs/FLOW_DATA_FORMAT.md`](docs/FLOW_DATA_FORMAT.md)で説明しています。
-
-## 12. Status
-
-**Current status: static flow viewer / prototype**
-
-- JSONベースの3フローを表示
-- OverviewとTraceを実装済み
-- 実運用API、アカウント、医療データ保存は未実装
-- 医学的妥当性や運用上の安全性の検証は、このRepositoryの範囲外
-
-## 13. Related project
-
-安心マップは、質問への回答から受診案内までの流れを設計するプロジェクトです。このRepositoryには、そのうち問診・分岐構造を確認するviewerとサンプルデータだけを収録しており、安心マップ本体のバックエンド、医療機関検索、運用環境は含みません。
+AO提出時点のsnapshotは`v0.1.0`として固定しています。

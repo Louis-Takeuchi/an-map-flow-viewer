@@ -40,12 +40,22 @@ export const TRIAGE_PRESENTATION = {
   },
 };
 
-export const DEFAULT_OUTCOME_COLOR = '#94a3b8';
+export const UNSPECIFIED_PRESENTATION = {
+  label: 'UNSPECIFIED',
+  description: '未設定',
+  color: '#64748b',
+  edgeColor: '#64748b',
+  textColor: '#fff',
+};
+
+export const DEFAULT_OUTCOME_COLOR = UNSPECIFIED_PRESENTATION.color;
 export const OTHER_OUTCOME_EDGE_COLOR = '#7c3aed';
 
 export function getOutcomeEdgeColor(outcomeId, triageLevel) {
+  if (!triageLevel) return UNSPECIFIED_PRESENTATION.edgeColor;
   if (outcomeId === 'out_mental_consult' || outcomeId === 'out_phone_consult') {
     return OTHER_OUTCOME_EDGE_COLOR;
   }
-  return TRIAGE_PRESENTATION[triageLevel]?.edgeColor || OTHER_OUTCOME_EDGE_COLOR;
+  return TRIAGE_PRESENTATION[triageLevel]?.edgeColor
+    || UNSPECIFIED_PRESENTATION.edgeColor;
 }

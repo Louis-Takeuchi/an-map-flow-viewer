@@ -2,6 +2,7 @@ import {
   DEFAULT_OUTCOME_COLOR,
   OTHER_OUTCOME_EDGE_COLOR,
   TRIAGE_PRESENTATION,
+  UNSPECIFIED_PRESENTATION,
 } from '../config/flowPresentation';
 
 const LEGEND_ITEMS = [
@@ -9,7 +10,10 @@ const LEGEND_ITEMS = [
   { label: 'YELLOW', color: TRIAGE_PRESENTATION.yellow.color },
   { label: 'GREEN', color: TRIAGE_PRESENTATION.green.color },
   { label: 'WHITE', color: TRIAGE_PRESENTATION.white.color },
-  { label: 'その他の結果', color: DEFAULT_OUTCOME_COLOR },
+  {
+    label: `${UNSPECIFIED_PRESENTATION.label} / ${UNSPECIFIED_PRESENTATION.description}`,
+    color: DEFAULT_OUTCOME_COLOR,
+  },
   { label: '相談結果への線', color: OTHER_OUTCOME_EDGE_COLOR },
 ];
 

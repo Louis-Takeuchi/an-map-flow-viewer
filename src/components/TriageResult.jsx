@@ -1,4 +1,7 @@
-import { OUTCOME_LABELS } from '../config/flowPresentation';
+import {
+  OUTCOME_LABELS,
+  UNSPECIFIED_PRESENTATION,
+} from '../config/flowPresentation';
 
 const TRIAGE_CONFIG = {
   red: {
@@ -44,10 +47,21 @@ const TRIAGE_CONFIG = {
       '迷ったら #7119 に電話',
     ],
   },
+  unspecified: {
+    className: 'tr--unspecified',
+    label: UNSPECIFIED_PRESENTATION.label,
+    subtitle: '表示区分 未設定',
+    title: '結果の表示区分は\n設定されていません',
+    guidance: [
+      'Viewerは未定義の医学的意味を補完しません',
+      '結果名と outcome_id を確認してください',
+    ],
+  },
 };
 
 export default function TriageResult({ outcome, onBack, onReset }) {
-  const config = TRIAGE_CONFIG[outcome.triageLevel] || TRIAGE_CONFIG.green;
+  const config = TRIAGE_CONFIG[outcome.triageLevel]
+    || TRIAGE_CONFIG.unspecified;
   const label = OUTCOME_LABELS[outcome.outcomeId] || outcome.outcomeId;
 
   return (

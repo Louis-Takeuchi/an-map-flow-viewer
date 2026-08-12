@@ -604,6 +604,7 @@ body {
 .tr--yellow { background: linear-gradient(to bottom, #f59e0b, #b45309); }
 .tr--green { background: linear-gradient(to bottom, #22c55e, #15803d); }
 .tr--white { background: linear-gradient(to bottom, #f1f5f9, #cbd5e1); color: #1e293b; }
+.tr--unspecified { background: linear-gradient(to bottom, #64748b, #334155); }
 
 .tr-content {
   flex: 1;

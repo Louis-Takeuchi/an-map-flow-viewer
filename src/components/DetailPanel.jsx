@@ -1,4 +1,7 @@
-import { TRIAGE_PRESENTATION } from '../config/flowPresentation';
+import {
+  TRIAGE_PRESENTATION,
+  UNSPECIFIED_PRESENTATION,
+} from '../config/flowPresentation';
 
 export default function DetailPanel({ node, onClose }) {
   if (!node) return null;
@@ -7,7 +10,8 @@ export default function DetailPanel({ node, onClose }) {
 
   // Outcome node
   if (node.type === 'outcome') {
-    const badge = TRIAGE_PRESENTATION[d.triageLevel];
+    const badge = TRIAGE_PRESENTATION[d.triageLevel]
+      || UNSPECIFIED_PRESENTATION;
     return (
       <div className="detail-panel">
         <div className="panel-header">
@@ -30,17 +34,16 @@ export default function DetailPanel({ node, onClose }) {
             <span className="detail-label">ラベル</span>
             <span>{d.label}</span>
           </div>
-          {badge && (
-            <div className="detail-row">
-              <span className="detail-label">トリアージ</span>
-              <span
-                className="triage-badge"
-                style={{ backgroundColor: badge.color, color: badge.textColor }}
-              >
-                {badge.label}
-              </span>
-            </div>
-          )}
+          <div className="detail-row">
+            <span className="detail-label">トリアージ</span>
+            <span
+              className="triage-badge"
+              style={{ backgroundColor: badge.color, color: badge.textColor }}
+            >
+              {badge.label}
+              {badge.description ? ` / ${badge.description}` : ''}
+            </span>
+          </div>
         </div>
       </div>
     );
@@ -84,7 +87,7 @@ export default function DetailPanel({ node, onClose }) {
               {d.options.map((opt) => {
                 const badge = opt.triage_level
                   ? TRIAGE_PRESENTATION[opt.triage_level]
-                  : null;
+                  : (opt.outcome_id ? UNSPECIFIED_PRESENTATION : null);
                 return (
                   <tr key={opt.option_id}>
                     <td>{opt.option_text}</td>
@@ -98,6 +101,7 @@ export default function DetailPanel({ node, onClose }) {
                           style={{ backgroundColor: badge.color, color: badge.textColor }}
                         >
                           {badge.label}
+                          {badge.description ? ` / ${badge.description}` : ''}
                         </span>
                       ) : '—'}
                     </td>
