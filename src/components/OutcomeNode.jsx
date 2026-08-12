@@ -1,15 +1,13 @@
 import { Handle, Position } from '@xyflow/react';
-
-const TRIAGE_COLORS = {
-  red: '#ef4444',
-  yellow: '#f59e0b',
-  green: '#22c55e',
-  white: '#e5e7eb',
-};
+import {
+  DEFAULT_OUTCOME_COLOR,
+  TRIAGE_PRESENTATION,
+} from '../config/flowPresentation';
 
 export default function OutcomeNode({ data }) {
-  const bg = TRIAGE_COLORS[data.triageLevel] || '#94a3b8';
-  const textColor = data.triageLevel === 'white' ? '#374151' : '#fff';
+  const presentation = TRIAGE_PRESENTATION[data.triageLevel];
+  const bg = presentation?.color || DEFAULT_OUTCOME_COLOR;
+  const textColor = presentation?.textColor || '#fff';
 
   return (
     <div

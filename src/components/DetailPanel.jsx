@@ -1,9 +1,4 @@
-const TRIAGE_BADGES = {
-  red: { bg: '#ef4444', label: 'RED' },
-  yellow: { bg: '#f59e0b', label: 'YELLOW' },
-  green: { bg: '#22c55e', label: 'GREEN' },
-  white: { bg: '#e5e7eb', label: 'WHITE', text: '#374151' },
-};
+import { TRIAGE_PRESENTATION } from '../config/flowPresentation';
 
 export default function DetailPanel({ node, onClose }) {
   if (!node) return null;
@@ -12,12 +7,19 @@ export default function DetailPanel({ node, onClose }) {
 
   // Outcome node
   if (node.type === 'outcome') {
-    const badge = TRIAGE_BADGES[d.triageLevel];
+    const badge = TRIAGE_PRESENTATION[d.triageLevel];
     return (
       <div className="detail-panel">
         <div className="panel-header">
           <h3>Outcome</h3>
-          <button className="close-btn" onClick={onClose}>×</button>
+          <button
+            type="button"
+            className="close-btn"
+            onClick={onClose}
+            aria-label="詳細を閉じる"
+          >
+            ×
+          </button>
         </div>
         <div className="panel-body">
           <div className="detail-row">
@@ -33,7 +35,7 @@ export default function DetailPanel({ node, onClose }) {
               <span className="detail-label">トリアージ</span>
               <span
                 className="triage-badge"
-                style={{ backgroundColor: badge.bg, color: badge.text || '#fff' }}
+                style={{ backgroundColor: badge.color, color: badge.textColor }}
               >
                 {badge.label}
               </span>
@@ -49,7 +51,14 @@ export default function DetailPanel({ node, onClose }) {
     <div className="detail-panel">
       <div className="panel-header">
         <h3>{d.nodeId}</h3>
-        <button className="close-btn" onClick={onClose}>×</button>
+        <button
+          type="button"
+          className="close-btn"
+          onClick={onClose}
+          aria-label="詳細を閉じる"
+        >
+          ×
+        </button>
       </div>
       <div className="panel-body">
         <div className="detail-row">
@@ -73,7 +82,9 @@ export default function DetailPanel({ node, onClose }) {
             </thead>
             <tbody>
               {d.options.map((opt) => {
-                const badge = opt.triage_level ? TRIAGE_BADGES[opt.triage_level] : null;
+                const badge = opt.triage_level
+                  ? TRIAGE_PRESENTATION[opt.triage_level]
+                  : null;
                 return (
                   <tr key={opt.option_id}>
                     <td>{opt.option_text}</td>
@@ -84,7 +95,7 @@ export default function DetailPanel({ node, onClose }) {
                       {badge ? (
                         <span
                           className="triage-badge"
-                          style={{ backgroundColor: badge.bg, color: badge.text || '#fff' }}
+                          style={{ backgroundColor: badge.color, color: badge.textColor }}
                         >
                           {badge.label}
                         </span>

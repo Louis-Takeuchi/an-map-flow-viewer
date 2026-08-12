@@ -1,14 +1,9 @@
 import { useState, useCallback, useMemo } from 'react';
 import flowData from '../data/flow_v1.0.json';
-
-const ENTRY_NODES = {
-  emergency: 'em_who',
-  medicine: 'mf_screen',
-  hospital: 'hp_screen',
-};
+import { FLOW_DEFINITION_BY_KEY } from '../config/flowMetadata';
 
 export function useTraceState(flowKind) {
-  const entryNodeId = ENTRY_NODES[flowKind];
+  const entryNodeId = FLOW_DEFINITION_BY_KEY[flowKind].entryNodeId;
 
   const nodeMap = useMemo(() => {
     const map = new Map();

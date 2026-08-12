@@ -1,23 +1,4 @@
-/**
- * Ported from citizen TriageResultPanels markup.
- * Visual structure only — no zustand, no geolocation, no API calls,
- * no hospital list, no TrackedLink.
- */
-
-const OUTCOME_LABELS = {
-  out_red: '119番通報',
-  out_yellow: '急性期受診',
-  out_yellow_home: '往診・オンライン診療',
-  out_green: '一般外来',
-  out_white: 'セルフケア',
-  out_mental_consult: '精神科相談',
-  out_phone_consult: '#7119 / #8000',
-  out_done: '完了',
-  out_escalate: '救急フローへ',
-  out_hospital: '病院紹介',
-  hp_escalate: '救急フローへ',
-  hp_done: '受診案内完了',
-};
+import { OUTCOME_LABELS } from '../config/flowPresentation';
 
 const TRIAGE_CONFIG = {
   red: {

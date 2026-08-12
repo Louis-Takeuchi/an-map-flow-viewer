@@ -1,35 +1,10 @@
 import { useMemo } from 'react';
 import Dagre from '@dagrejs/dagre';
 import flowData from '../data/flow_v1.0.json';
-
-const OUTCOME_LABELS = {
-  out_red: '119番通報',
-  out_yellow: '急性期受診',
-  out_yellow_home: '往診・オンライン',
-  out_green: '一般外来',
-  out_white: 'セルフケア',
-  out_mental_consult: '精神科相談',
-  out_phone_consult: '#7119/#8000',
-  out_done: '完了',
-  out_escalate: '救急フローへ',
-  out_hospital: '病院紹介',
-  hp_escalate: '救急フローへ',
-  hp_done: '受診案内完了',
-};
-
-const TRIAGE_EDGE_COLORS = {
-  red: '#dc2626',
-  yellow: '#d97706',
-  green: '#16a34a',
-  white: '#94a3b8',
-};
-
-function getOutcomeEdgeColor(outcomeId, triageLevel) {
-  if (outcomeId === 'out_mental_consult' || outcomeId === 'out_phone_consult') {
-    return '#7c3aed';
-  }
-  return TRIAGE_EDGE_COLORS[triageLevel] || '#7c3aed';
-}
+import {
+  OUTCOME_LABELS,
+  getOutcomeEdgeColor,
+} from '../config/flowPresentation';
 
 function truncate(text, max = 15) {
   return text.length > max ? text.slice(0, max) + '…' : text;

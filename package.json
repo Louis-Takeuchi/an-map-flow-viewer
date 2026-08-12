@@ -1,12 +1,17 @@
 {
-  "name": "flow-viewer",
+  "name": "an-map-flow-viewer",
   "version": "0.1.0",
+  "description": "Static viewer for inspecting Anshin Map questionnaire flows in overview and trace modes.",
   "private": true,
   "type": "module",
+  "engines": {
+    "node": "^18.0.0 || >=20.0.0"
+  },
   "scripts": {
     "dev": "vite",
     "build": "vite build",
-    "preview": "vite preview"
+    "preview": "vite preview",
+    "validate:flows": "node scripts/validate-flows.mjs"
   },
   "dependencies": {
     "@dagrejs/dagre": "^1.1.4",
