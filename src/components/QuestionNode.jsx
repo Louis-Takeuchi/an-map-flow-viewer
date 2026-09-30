@@ -1,6 +1,7 @@
 import { Handle, Position } from '@xyflow/react';
 
 const BORDER_COLORS = {
+  single_choice: '#3b82f6',
   red_flag_screen: '#ef4444',
   objective_demographic: '#3b82f6',
   entry_intent: '#22c55e',
@@ -26,9 +27,9 @@ export default function QuestionNode({ data, selected }) {
     >
       <Handle type="target" position={Position.Top} />
       <div className="node-id">{data.nodeId}</div>
-      <div className="node-question">{truncated}</div>
-      <div className="node-badge" style={{ backgroundColor: borderColor }}>
-        {data.responseType.replace(/_/g, ' ')}
+      <div className="node-question" title={data.questionText}>{truncated}</div>
+      <div className="node-badge" style={{ backgroundColor: borderColor }} title={data.subtitle || data.responseType}>
+        {data.subtitle || data.responseType.replace(/_/g, ' ')}
       </div>
       <Handle type="source" position={Position.Bottom} />
     </div>

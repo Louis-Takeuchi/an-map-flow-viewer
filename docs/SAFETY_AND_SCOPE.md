@@ -14,11 +14,11 @@
 - 患者情報、アカウント、回答履歴の永続管理
 - 医療機関の検索・推薦
 - 安心マップ本体のバックエンド処理や運用環境
-- 実運用サービスとのデータ連携
+- Viewer実行時の実運用サービスとのデータ連携
 
 ## Communication and storage
 
-現在のアプリケーションコードはRepository内の静的JSONを読み込みます。バックエンドAPI、`fetch`、axios、WebSocket、analytics／telemetry、外部SDKを使用せず、問診回答を外部サービスへ送信しません。
+現在のアプリケーションコードはRepository内の静的JSONを読み込みます。実行時にバックエンドAPI、`fetch`、axios、WebSocket、analytics／telemetry、外部SDKを使用せず、問診回答を外部サービスへ送信しません。
 
 Traceで選択した回答はReact stateに一時保持します。`localStorage`、`sessionStorage`、IndexedDB、Cookie、データベースには保存せず、ページを再読み込みすると消えます。
 
@@ -27,3 +27,9 @@ Traceで選択した回答はReact stateに一時保持します。`localStorage
 ## Limitations
 
 このRepositoryは問診・分岐構造を人間が確認するための技術資料です。表示内容を単体で医療判断に利用することは想定しておらず、構造validatorも医学的な正しさや安全性を証明しません。
+
+## 公開版との同期範囲
+
+開発用の`check:flows` / `sync:flows`コマンドは公開サイトの`/flows/*.json`のみをGETします。問診回答や患者情報を送信しません。保存JSONは確認日時点のスナップショットであり、その後の本体更新へ自動追従しません。
+
+同期するのは質問・補足・選択肢・遷移・出典・結果定義です。本体の結果画面にある履歴や条件による追加案内、救急フローへの切り替え、医療機関検索、外部サービスへの連絡は再現しません。JSONの`action`は終点として表示します。出典情報は公開JSONに記載された内容の表示であり、Viewer側による医学的検証を意味しません。

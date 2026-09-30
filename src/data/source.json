@@ -1,0 +1,27 @@
+{
+  "site_url": "https://www.anshinmap.co.jp/",
+  "verified_at": "2026-09-30T05:55:28.436Z",
+  "flows": {
+    "emergency": {
+      "url": "https://www.anshinmap.co.jp/flows/emergency.json",
+      "protocol_version": "emergency-qsuke-v3-compat-0.3",
+      "sha256": "dab91b3366b8cb5095c207e7f323583a0557adb7600e4bd3acbc066521869983",
+      "question_count": 14,
+      "outcome_count": 7
+    },
+    "medicine": {
+      "url": "https://www.anshinmap.co.jp/flows/medicine.json",
+      "protocol_version": "medicine-mvp-0.1",
+      "sha256": "7d41a8d3580572560e6f4ef1b1da0efbb8a0be20c770cf084406b6e854c1c21d",
+      "question_count": 3,
+      "outcome_count": 3
+    },
+    "hospital": {
+      "url": "https://www.anshinmap.co.jp/flows/hospital.json",
+      "protocol_version": "hospital-mvp-0.3",
+      "sha256": "c7bfe3c8fae0c8a3d7efee230bec7402c04ba10121721f15b6f48ea5b28fda67",
+      "question_count": 5,
+      "outcome_count": 2
+    }
+  }
+}

@@ -1,15 +1,9 @@
-import flowData from '../data/flow_v1.0.json';
 import { FLOW_DEFINITIONS } from '../config/flowMetadata';
-
-const TABS = FLOW_DEFINITIONS.map((flow) => ({
-  ...flow,
-  count: flowData.nodes.filter((node) => node.flow_kind === flow.key).length,
-}));
 
 export default function FlowTabs({ activeFlow, onChange }) {
   return (
     <div className="flow-tabs">
-      {TABS.map((tab) => (
+      {FLOW_DEFINITIONS.map((tab) => (
         <button
           type="button"
           key={tab.key}
@@ -17,7 +11,7 @@ export default function FlowTabs({ activeFlow, onChange }) {
           onClick={() => onChange(tab.key)}
           aria-pressed={activeFlow === tab.key}
         >
-          {tab.label} ({tab.count})
+          {tab.label} ({tab.questionCount})
         </button>
       ))}
     </div>

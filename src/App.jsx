@@ -5,6 +5,7 @@ import FlowCanvas from './components/FlowCanvas';
 import DetailPanel from './components/DetailPanel';
 import TraceView from './components/TraceView';
 import ViewerGuide from './components/ViewerGuide';
+import SourceStatus from './components/SourceStatus';
 import { useFlowGraph } from './hooks/useFlowGraph';
 
 const HIGHLIGHT_COLOR = '#0891b2';
@@ -13,6 +14,11 @@ function FlowView({ flowKind, labelsAlwaysOn }) {
   const { nodes, edges } = useFlowGraph(flowKind);
   const [selectedNode, setSelectedNode] = useState(null);
   const [hoveredNodeId, setHoveredNodeId] = useState(null);
+  const [zoom, setZoom] = useState(1);
+
+  const handleViewportChange = useCallback((viewport) => {
+    setZoom(viewport.zoom);
+  }, []);
 
   const handleNodeClick = useCallback((_event, node) => {
     setSelectedNode(node);
@@ -20,6 +26,7 @@ function FlowView({ flowKind, labelsAlwaysOn }) {
 
   const handlePaneClick = useCallback(() => {
     setSelectedNode(null);
+    setHoveredNodeId(null);
   }, []);
 
   const handleNodeMouseEnter = useCallback((_event, node) => {
@@ -29,6 +36,25 @@ function FlowView({ flowKind, labelsAlwaysOn }) {
   const handleNodeMouseLeave = useCallback(() => {
     setHoveredNodeId(null);
   }, []);
+
+  const derivedNodes = useMemo(() => {
+    if (!selectedNode) return nodes;
+    const connectedIds = new Set([selectedNode.id]);
+    for (const edge of edges) {
+      if (edge.source === selectedNode.id || edge.target === selectedNode.id) {
+        connectedIds.add(edge.source);
+        connectedIds.add(edge.target);
+      }
+    }
+    return nodes.map((node) => ({
+      ...node,
+      className: node.id === selectedNode.id
+        ? 'overview-node--selected'
+        : connectedIds.has(node.id)
+          ? 'overview-node--connected'
+          : 'overview-node--dimmed',
+    }));
+  }, [nodes, edges, selectedNode?.id]);
 
   const derivedEdges = useMemo(() => {
     const activeNodeId = selectedNode?.id || hoveredNodeId;
@@ -43,38 +69,51 @@ function FlowView({ flowKind, labelsAlwaysOn }) {
       let strokeWidth = 1.5;
       if (connected) {
         stroke = HIGHLIGHT_COLOR;
-        strokeWidth = 2.5;
+        // React Flow scales the enclosing HTML viewport, so compensate here
+        // to retain a visible screen-space width at overview zoom levels.
+        strokeWidth = (selectedNode ? 4.5 : 3) / zoom;
       }
 
       return {
         ...edge,
         label: showLabel ? edge.data?.fullLabel : undefined,
+        className: connected ? 'overview-edge--highlighted' : undefined,
+        zIndex: connected ? 10 : 0,
+        labelStyle: connected
+          ? { fill: '#0e7490', fontWeight: 700 }
+          : { opacity: selectedNode ? 0.18 : 1 },
+        labelBgStyle: connected
+          ? { fill: '#fff', fillOpacity: 0.98 }
+          : { opacity: selectedNode ? 0.18 : 1 },
         style: {
           ...edge.style,
           stroke,
           strokeWidth,
+          strokeDasharray: connected ? 'none' : edge.style?.strokeDasharray,
+          opacity: selectedNode && !connected ? 0.12 : 1,
         },
       };
     });
-  }, [edges, selectedNode?.id, hoveredNodeId, labelsAlwaysOn]);
+  }, [edges, selectedNode?.id, hoveredNodeId, labelsAlwaysOn, zoom]);
 
   return (
     <div className="flow-container">
       <div className="canvas-area">
         <ReactFlowProvider>
           <FlowCanvas
-            nodes={nodes}
+            nodes={derivedNodes}
             edges={derivedEdges}
             onNodeClick={handleNodeClick}
             onPaneClick={handlePaneClick}
             onNodeMouseEnter={handleNodeMouseEnter}
             onNodeMouseLeave={handleNodeMouseLeave}
+            onViewportChange={handleViewportChange}
           />
         </ReactFlowProvider>
       </div>
       <DetailPanel
         node={selectedNode}
-        onClose={() => setSelectedNode(null)}
+        onClose={handlePaneClick}
       />
     </div>
   );
@@ -122,6 +161,7 @@ export default function App() {
           </button>
         )}
       </header>
+      <SourceStatus flowKind={activeFlow} />
       <ViewerGuide mode={mode} />
       {mode === 'overview' ? (
         <FlowView

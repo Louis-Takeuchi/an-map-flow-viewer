@@ -46,6 +46,7 @@ export default function QuestionPanel({
       {/* Question card — citizen FlowRunner: rounded card + choices */}
       <div className="qp-card">
         <p className="qp-node-id">{node.node_id}</p>
+        {node.subtitle && <p className="qp-subtitle">{node.subtitle}</p>}
         <h2 className="qp-question">{node.question_text}</h2>
 
         <div className="qp-choices">
@@ -53,8 +54,7 @@ export default function QuestionPanel({
             let variant = '';
             if (
               opt.triage_level === 'red' ||
-              opt.outcome_id === 'out_escalate' ||
-              opt.outcome_id === 'hp_escalate'
+              opt.action === 'redirect_emergency'
             ) {
               variant = 'qp-choice--red';
             } else if (opt.triage_level === 'yellow') {
@@ -80,7 +80,7 @@ export default function QuestionPanel({
       </div>
 
       <p className="qp-meta">
-        response_type: <code>{node.response_type}</code>
+        protocol: <code>{node.protocol_version}</code>
       </p>
     </div>
   );

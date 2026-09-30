@@ -1,0 +1,220 @@
+{
+  "id": "emergency",
+  "protocol_version": "emergency-qsuke-v3-compat-0.3",
+  "source": "q-suke-v3",
+  "start": "em_who",
+  "questions": {
+    "em_who": {
+      "text": "どなたのことについてですか？",
+      "subtitle": "受診の目安をお伝えします。医療行為ではありません。",
+      "choices": [
+        { "label": "15歳未満の子ども", "next": "em_redflags", "data": { "target": "child_u15" } },
+        { "label": "15〜64歳の大人", "next": "em_redflags", "data": { "target": "adult" } },
+        { "label": "65歳以上の高齢者", "next": "em_redflags", "data": { "target": "elderly" } },
+        { "label": "妊娠中の方", "next": "em_pregnancy_redflags", "data": { "target": "pregnant" } }
+      ]
+    },
+    "em_pregnancy_redflags": {
+      "text": "次のうち、当てはまるものはありますか？",
+      "subtitle": "妊娠中の緊急サインを確認します",
+      "evidence": {
+        "source": "日本産科婦人科学会 妊婦健康診査の手引き",
+        "checked_at": "2026-04-23"
+      },
+      "choices": [
+        { "label": "性器からの大量出血（生理以外）", "next": "out_red", "data": { "preg_flag": "genital_bleeding" } },
+        { "label": "規則的な強いお腹の張り・破水したかも", "next": "out_red", "data": { "preg_flag": "labor_concern" } },
+        { "label": "胎動を感じない・明らかに減った", "next": "out_red", "data": { "preg_flag": "fetal_movement_reduced" } },
+        { "label": "上記はない", "next": "em_redflags", "data": { "preg_flag": "none" } }
+      ]
+    },
+    "em_redflags": {
+      "text": "次のうち、当てはまるものはありますか？",
+      "subtitle": "1つでもある場合は、すぐに119番へ",
+      "evidence": {
+        "source": "総務省消防庁 緊急度判定プロトコル ver.3 家庭自己判断",
+        "url": "https://www.fdma.go.jp/mission/enrichment/appropriate/appropriate002.html",
+        "section": "第1段階 致死的徴候",
+        "checked_at": "2026-04-23"
+      },
+      "choices": [
+        { "label": "意識がない・呼びかけに反応しない", "next": "out_red", "data": { "red_flag": "consciousness" } },
+        { "label": "呼吸が止まっている・苦しそう", "next": "out_red", "data": { "red_flag": "breathing" } },
+        { "label": "けいれんが長く続く／止まらない", "next": "out_red", "data": { "red_flag": "seizure" } },
+        { "label": "大量の出血が止まらない", "next": "out_red", "data": { "red_flag": "bleeding" } },
+        { "label": "急な胸の痛み", "next": "out_red", "data": { "red_flag": "chest_pain" } },
+        { "label": "突然の激しい頭痛、顔や手足の麻痺、ろれつが回らない", "next": "out_red", "data": { "red_flag": "neuro" } },
+        { "label": "上記に当てはまるものはない", "next": "em_symptom", "data": { "red_flag": "none" } }
+      ]
+    },
+    "em_symptom": {
+      "text": "いちばん近い症状はどれですか？",
+      "subtitle": "当てはまるものを1つ選んでください",
+      "choices": [
+        { "label": "発熱・風邪のような症状", "next": "em_fever_course", "data": { "symptom": "fever" } },
+        { "label": "呼吸が苦しい・息切れ", "next": "em_mobility", "data": { "symptom": "breath_distress" } },
+        { "label": "胸の痛み・圧迫感（さきほどの急な胸痛以外）", "next": "em_mobility", "data": { "symptom": "chest" } },
+        { "label": "頭痛・めまい", "next": "em_headache", "data": { "symptom": "headache" } },
+        { "label": "吐き気・嘔吐・下痢", "next": "em_abdomen", "data": { "symptom": "gi" } },
+        { "label": "腹痛", "next": "em_abdomen_pain", "data": { "symptom": "abdominal_pain" } },
+        { "label": "ケガ・やけど・打撲", "next": "em_injury", "data": { "symptom": "injury" } },
+        { "label": "目・耳・鼻・喉の強い症状", "next": "em_ent", "data": { "symptom": "ent" } },
+        { "label": "尿の異常（血尿・排尿困難など）", "next": "em_urine", "data": { "symptom": "urine" } },
+        { "label": "出血（吐血・下血・性器出血など）", "next": "em_bleeding_nonemerge", "data": { "symptom": "bleeding_non_major" } },
+        { "label": "精神症状（強い不安・自傷の念慮）", "next": "em_mental", "data": { "symptom": "mental" } },
+        { "label": "その他・よく分からない", "next": "out_phone_consult", "data": { "symptom": "other" } }
+      ]
+    },
+    "em_fever_course": {
+      "text": "経過はどれに近いですか？",
+      "subtitle": "発熱・風邪症状",
+      "evidence": {
+        "source": "総務省消防庁 緊急度判定プロトコル ver.3 家庭自己判断",
+        "url": "https://www.fdma.go.jp/mission/enrichment/appropriate/appropriate002.html",
+        "section": "症候別 発熱",
+        "checked_at": "2026-04-23"
+      },
+      "choices": [
+        { "label": "急に悪化した／意識もうろうとする", "next": "em_mobility", "data": { "course": "worsening" } },
+        { "label": "今日から強いが、意識ははっきりしている", "next": "out_green", "data": { "course": "acute_clear" } },
+        { "label": "昨日以前から続いている", "next": "out_white", "data": { "course": "prolonged" } }
+      ]
+    },
+    "em_headache": {
+      "text": "頭痛の様子は？",
+      "subtitle": "これまでにないほどの激痛や、神経症状に注意します",
+      "evidence": {
+        "source": "総務省消防庁 緊急度判定プロトコル ver.3 家庭自己判断",
+        "url": "https://www.fdma.go.jp/mission/enrichment/appropriate/appropriate002.html",
+        "section": "症候別 頭痛",
+        "checked_at": "2026-04-23"
+      },
+      "choices": [
+        { "label": "今までで一番ひどい突然の激しい頭痛", "next": "out_red", "data": { "head": "thunderclap" } },
+        { "label": "しびれ・ろれつ・視力の急変もある", "next": "em_mobility", "data": { "head": "neuro_signs" } },
+        { "label": "いつもと違うが、活動はできる", "next": "out_green", "data": { "head": "unusual_mild" } },
+        { "label": "いつもと同じような張り付く痛み", "next": "out_white", "data": { "head": "usual" } }
+      ]
+    },
+    "em_abdomen": {
+      "text": "お腹の症状の強さは？",
+      "subtitle": "嘔吐・下痢",
+      "evidence": {
+        "source": "総務省消防庁 緊急度判定プロトコル ver.3 家庭自己判断",
+        "url": "https://www.fdma.go.jp/mission/enrichment/appropriate/appropriate002.html",
+        "section": "症候別 嘔気・嘔吐・下痢",
+        "checked_at": "2026-04-23"
+      },
+      "choices": [
+        { "label": "血便・黒い便がある", "next": "em_mobility", "data": { "abd": "bloody_stool" } },
+        { "label": "水分が取れない・排尿が極端に少ない", "next": "em_mobility", "data": { "abd": "dehydration" } },
+        { "label": "辛いが歩ける・水分は取れている", "next": "out_green", "data": { "abd": "moderate" } },
+        { "label": "軽い不調で様子を見ている段階", "next": "out_white", "data": { "abd": "mild" } }
+      ]
+    },
+    "em_abdomen_pain": {
+      "text": "腹痛の強さと様子は？",
+      "subtitle": "腹痛",
+      "evidence": {
+        "source": "総務省消防庁 緊急度判定プロトコル ver.3 家庭自己判断",
+        "url": "https://www.fdma.go.jp/mission/enrichment/appropriate/appropriate002.html",
+        "section": "症候別 腹痛",
+        "checked_at": "2026-04-23"
+      },
+      "choices": [
+        { "label": "痛みが強く動けない", "next": "em_mobility", "data": { "abd_pain": "severe" } },
+        { "label": "右下腹部の痛みで悪化している", "next": "em_mobility", "data": { "abd_pain": "appendix_concern" } },
+        { "label": "辛いが動ける・水分は取れている", "next": "out_green", "data": { "abd_pain": "moderate" } },
+        { "label": "軽い腹痛で様子を見ている", "next": "out_white", "data": { "abd_pain": "mild" } }
+      ]
+    },
+    "em_injury": {
+      "text": "ケガ・やけど・打撲の状況は？",
+      "subtitle": "ケガの程度",
+      "choices": [
+        { "label": "広範囲のやけど・顔面のやけど", "next": "out_red", "data": { "injury": "severe_burn" } },
+        { "label": "骨折の可能性がある・動かせない", "next": "em_mobility", "data": { "injury": "fracture_concern" } },
+        { "label": "頭を強く打った・意識が一時なくなった", "next": "em_mobility", "data": { "injury": "head_trauma" } },
+        { "label": "切り傷・擦り傷・軽いやけど", "next": "out_green", "data": { "injury": "minor" } }
+      ]
+    },
+    "em_ent": {
+      "text": "目・耳・鼻・喉の症状の様子は？",
+      "subtitle": "五官の症状",
+      "choices": [
+        { "label": "視力が急に低下した・ものが二重に見える", "next": "em_mobility", "data": { "ent": "vision_sudden" } },
+        { "label": "喉が腫れて息苦しい・飲み込めない", "next": "out_red", "data": { "ent": "airway_concern" } },
+        { "label": "耳・鼻・喉の強い痛み", "next": "out_green", "data": { "ent": "pain_moderate" } },
+        { "label": "軽い違和感程度", "next": "out_white", "data": { "ent": "mild" } }
+      ]
+    },
+    "em_urine": {
+      "text": "尿の異常の様子は？",
+      "subtitle": "尿の変化",
+      "choices": [
+        { "label": "血尿がある", "next": "em_mobility", "data": { "urine": "hematuria" } },
+        { "label": "全く尿が出ない（12時間以上）", "next": "em_mobility", "data": { "urine": "anuria" } },
+        { "label": "排尿時の痛み・頻尿が強い", "next": "out_green", "data": { "urine": "dysuria" } },
+        { "label": "軽い違和感程度", "next": "out_white", "data": { "urine": "mild" } }
+      ]
+    },
+    "em_bleeding_nonemerge": {
+      "text": "出血の様子は？",
+      "subtitle": "吐血・下血・性器出血など",
+      "choices": [
+        { "label": "吐血がある・黒い便が出ている", "next": "out_red", "data": { "bleed": "upper_gi" } },
+        { "label": "大量の性器出血（生理以外）", "next": "em_mobility", "data": { "bleed": "genital_heavy" } },
+        { "label": "少量の血便・軽度の性器出血", "next": "em_mobility", "data": { "bleed": "moderate" } },
+        { "label": "痔・軽い出血で経過観察中", "next": "out_green", "data": { "bleed": "mild" } }
+      ]
+    },
+    "em_mental": {
+      "text": "精神症状の状況は？",
+      "subtitle": "ご自身または周囲の方の状況をお聞かせください",
+      "evidence": {
+        "source": "総務省消防庁 緊急度判定プロトコル ver.3 家庭自己判断",
+        "url": "https://www.fdma.go.jp/mission/enrichment/appropriate/appropriate002.html",
+        "section": "症候別 精神症状",
+        "checked_at": "2026-04-23"
+      },
+      "choices": [
+        { "label": "今すぐ自分や他者を傷つけようとしている", "next": "out_red", "data": { "mental": "immediate_risk" } },
+        { "label": "自傷・自殺を考えているが、今すぐではない", "next": "out_mental_consult", "data": { "mental": "ideation" } },
+        { "label": "強い不安・パニック発作がある", "next": "out_mental_consult", "data": { "mental": "panic" } },
+        { "label": "気持ちの落ち込み・不眠が続いている", "next": "out_green", "data": { "mental": "mild_depression" } }
+      ]
+    },
+    "em_mobility": {
+      "text": "今、自宅から医療機関まで移動できそうですか？",
+      "subtitle": "歩く・車で移動する・付き添いで運んでもらうなど",
+      "evidence": {
+        "source": "総務省消防庁 緊急度判定プロトコル ver.3 家庭自己判断",
+        "url": "https://www.fdma.go.jp/mission/enrichment/appropriate/appropriate002.html",
+        "section": "移動手段の確認",
+        "checked_at": "2026-04-23"
+      },
+      "choices": [
+        { "label": "動ける・移動できる", "next": "out_yellow", "data": { "mobility": "ok" } },
+        { "label": "動くのが難しい・起き上がれない", "next": "out_yellow_home", "data": { "mobility": "hard" } },
+        { "label": "判断がつかない", "next": "out_yellow", "data": { "mobility": "unclear" } }
+      ]
+    }
+  },
+  "outcomes": {
+    "out_red": { "triage": "red", "label": "緊急", "hint": "119番" },
+    "out_yellow": { "triage": "yellow", "label": "早めの受診の目安", "hint": "2時間以内の受診をご検討ください" },
+    "out_yellow_home": { "triage": "yellow", "label": "早めの受診の目安", "hint": "往診・オンライン診療を優先で検討" },
+    "out_green": { "triage": "green", "label": "近日中の受診の目安", "hint": "必要に応じて医療機関へ" },
+    "out_white": { "triage": "white", "label": "経過観察の目安", "hint": "変化に注意しながら様子を見る" },
+    "out_mental_consult": {
+      "triage": "yellow",
+      "label": "専門の相談窓口をご案内します",
+      "hint": "いのちの電話 / よりそいホットライン / 精神科救急情報センター"
+    },
+    "out_phone_consult": {
+      "action": "phone_consultation",
+      "label": "受診先の相談を優先",
+      "reason": "unclear_symptom"
+    }
+  }
+}

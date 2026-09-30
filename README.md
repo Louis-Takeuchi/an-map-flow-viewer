@@ -22,7 +22,9 @@
 
 ## 実装データ
 
-数値は[`src/data/flow_v1.0.json`](src/data/flow_v1.0.json)から機械的に集計し、`npm run validate:flows`でも照合します。
+2026年9月30日に[公開中の安心マップ](https://www.anshinmap.co.jp/)が読み込む3つの問診JSONと同期しました。質問文6件・選択肢94件の文言を更新し、補足説明・出典・結果の案内文・actionも取り込みました。分岐先、質問数、結果数に変更はありません。
+
+数値は[`src/data/flows/`](src/data/flows/)の公開JSONから機械的に集計し、`npm run validate:flows`でも照合します。画面には公開版のプロトコルと確認日を表示します。
 
 | フロー | 開始ノード | 質問数 | 一意な結果数 |
 | --- | --- | ---: | ---: |
@@ -35,13 +37,13 @@
 
 | フロー | 結果表示 |
 | --- | --- |
-| 救急 | 119番通報、急性期受診、往診・オンライン診療、一般外来、セルフケア、精神科相談、#7119 / #8000 |
-| 薬 | 救急フローへ、完了、病院紹介 |
-| 病院案内 | 救急フローへ、受診案内完了 |
+| 救急 | 緊急、早めの受診の目安（受診／往診等）、近日中の受診の目安、経過観察の目安、専門の相談窓口をご案内します、受診先の相談を優先 |
+| 薬 | 救急の目安へ、案内へ、対面の受診先を探す |
+| 病院案内 | 救急の目安へ、近くの医療機関を表示 |
 
 RED・YELLOW・GREEN・WHITEは結果を識別するための4種類の表示設定です。色だけでなく、結果名とIDも表示します。
 
-結果の色はJSONの`triage_level`等の表示情報に基づき、未定義時にViewerが医学的意味を補完せず`UNSPECIFIED / 未設定`として中立表示します。
+結果名・案内文は公開JSONの`label`・`hint`をそのまま表示します。同じ色でも、受診・往診・専門相談など結果ごとの案内を保持します。結果の色は公開JSONの`triage`に基づき、未定義時にViewerが医学的意味を補完せず`UNSPECIFIED / 未設定`として中立表示します。
 
 ## 技術構成
 
@@ -73,7 +75,7 @@ Overview / Trace / Detail
 
 ## Data / Privacy
 
-アプリケーションコードはRepository内の静的JSONを読み込みます。バックエンドAPI、`fetch`、axios、WebSocket、analytics／telemetry、外部SDKを使用せず、問診回答を外部へ送信しません。
+アプリケーションコードはRepository内の静的JSONを読み込みます。実行時にバックエンドAPI、`fetch`、axios、WebSocket、analytics／telemetry、外部SDKを使用せず、問診回答を外部へ送信しません。
 
 Traceの回答履歴はReactのメモリ上だけに保持されます。`localStorage`、`sessionStorage`、IndexedDB、Cookie、データベースには保存せず、再読み込みすると消えます。ホスティング事業者が通常のアクセスログを扱う可能性は、このアプリケーションコードの保証範囲外です。
 
@@ -86,11 +88,30 @@ git clone https://github.com/Louis-Takeuchi/an-map-flow-viewer.git
 cd an-map-flow-viewer
 npm ci
 npm run validate:flows
+npm test
 npm run build
 npm run dev
 ```
 
-`npm run dev`が表示するローカルURLをブラウザで開きます。push／pull request時にもGitHub Actionsが`npm ci`、構造検証、buildを実行します。
+`npm run dev`が表示するローカルURLをブラウザで開きます。push／pull request時にもGitHub Actionsが`npm ci`、構造検証、テスト、buildを実行します。
+
+## 公開版との照合・更新
+
+```bash
+npm run check:flows  # 読み取り専用。公開版と違えば終了コード1
+npm run sync:flows   # 3ファイル取得・構造検証後、保存JSONと確認情報を更新
+npm run validate:flows
+npm test
+npm run build
+```
+
+この2つの照合・更新コマンドのみネットワーク接続が必要です。Viewer自身は保存したデータを表示し、自動で公開版へ追従するものではありません。プロトコル版が同じでもJSONの内容全体を比較します。取得先、確認日時、SHA-256、件数は[`src/data/source.json`](src/data/source.json)に記録します。出典の`checked_at`は配信元が記録した日付で、Viewerの同期日とは別です。
+
+| フロー | 確認した公開プロトコル |
+| --- | --- |
+| 救急 | `emergency-qsuke-v3-compat-0.3` |
+| 薬 | `medicine-mvp-0.1` |
+| 病院案内 | `hospital-mvp-0.3` |
 
 ## Repository構成
 
@@ -98,13 +119,15 @@ npm run dev
 .
 ├── .github/workflows/ci.yml   # 構造検証とbuildのCI
 ├── docs/                      # アーキテクチャ、データ形式、範囲
-├── scripts/validate-flows.mjs # JSON／グラフ構造validator
+├── scripts/                   # 構造検証、公開版との照合・同期、テスト
 ├── src/
 │   ├── components/            # Overview、Trace、Detail UI
 │   ├── config/                # フロー開始点と表示定義
-│   ├── data/flow_v1.0.json    # 問診フローの静的データ
+│   ├── data/flows/            # 公開サイトの問診JSON原本
+│   ├── data/source.json       # 配信元・確認日時・ハッシュ
+│   ├── lib/flowModel.js       # 構造検証とViewer形式への変換
 │   └── hooks/                 # グラフ生成とTrace状態
 └── package.json
 ```
 
-AO提出時点のsnapshotは`v0.1.0`として固定しています。
+AO提出時点のsnapshotは`v0.1.0`として固定しています。旧`src/data/flow_v1.0.json`は履歴参照用に残しており、現在の画面では読み込みません。

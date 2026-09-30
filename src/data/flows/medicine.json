@@ -1,0 +1,43 @@
+{
+  "id": "medicine",
+  "protocol_version": "medicine-mvp-0.1",
+  "start": "mf_screen",
+  "questions": {
+    "mf_screen": {
+      "text": "今日、いつもと違う症状はありますか？",
+      "subtitle": "「いつもの薬」の前に確認します",
+      "choices": [
+        { "label": "胸の痛み・息苦しさがある", "next": "out_escalate", "data": { "screen": "chest" } },
+        { "label": "意識がもうろう・強いめまい", "next": "out_escalate", "data": { "screen": "neuro" } },
+        { "label": "激しい頭痛・腹痛・出血が目立つ", "next": "out_escalate", "data": { "screen": "severe" } },
+        { "label": "高熱や嘔吐が止まらない", "next": "out_escalate", "data": { "screen": "gi_fever" } },
+        { "label": "上記はない（普段と同じ状態）", "next": "mf_type", "data": { "screen": "ok" } }
+      ]
+    },
+    "mf_type": {
+      "text": "どのようなお薬のご用件ですか？",
+      "subtitle": "近いものを1つ選んでください",
+      "choices": [
+        { "label": "慢性疾患の定期処方（高血圧・糖尿病など）", "next": "mf_gp", "data": { "rx_type": "chronic" } },
+        { "label": "花粉症・軽い風邪・胃腸の症状など", "next": "mf_gp", "data": { "rx_type": "acute_mild" } },
+        { "label": "はじめての処方がほしい（初診に近い）", "next": "out_done", "data": { "rx_type": "first" } },
+        { "label": "麻薬・向精神薬・睡眠薬・8日以上の処方が必要", "next": "out_hospital", "data": { "rx_type": "controlled" } },
+        { "label": "よく分からない", "next": "out_done", "data": { "rx_type": "unknown" } }
+      ]
+    },
+    "mf_gp": {
+      "text": "かかりつけ医（いつも通う医療機関）はありますか？",
+      "subtitle": "オンライン診療の前に確認します",
+      "choices": [
+        { "label": "はい、定期的に通っている", "next": "out_done", "data": { "gp": "regular" } },
+        { "label": "ある程度通っているが最近行けていない", "next": "out_done", "data": { "gp": "sometimes" } },
+        { "label": "ない／引越しした", "next": "out_done", "data": { "gp": "none" } }
+      ]
+    }
+  },
+  "outcomes": {
+    "out_escalate": { "action": "redirect_emergency", "label": "救急の目安へ" },
+    "out_hospital": { "action": "hospital_search", "label": "対面の受診先を探す" },
+    "out_done": { "action": "medicine_complete", "label": "案内へ" }
+  }
+}

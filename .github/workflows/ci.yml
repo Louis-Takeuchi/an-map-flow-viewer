@@ -28,3 +28,6 @@ jobs:
 
       - name: Build static viewer
         run: npm run build
+
+      - name: Test protocol adaptation
+        run: npm test

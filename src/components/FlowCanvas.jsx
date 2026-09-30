@@ -16,6 +16,7 @@ const nodeTypes = {
 
 export default function FlowCanvas({
   nodes, edges, onNodeClick, onPaneClick, onNodeMouseEnter, onNodeMouseLeave,
+  onViewportChange,
 }) {
   return (
     <ReactFlow
@@ -26,6 +27,7 @@ export default function FlowCanvas({
       onPaneClick={onPaneClick}
       onNodeMouseEnter={onNodeMouseEnter}
       onNodeMouseLeave={onNodeMouseLeave}
+      onViewportChange={onViewportChange}
       fitView
       fitViewOptions={{ padding: 0.2 }}
       minZoom={0.2}

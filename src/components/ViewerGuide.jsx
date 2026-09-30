@@ -22,7 +22,7 @@ export default function ViewerGuide({ mode }) {
     <section className="viewer-guide" aria-label="操作説明">
       <p className="viewer-guide__text">
         {mode === 'overview'
-          ? '全体構造を表示しています。質問・結果ノードを選択すると詳細を確認できます。'
+          ? '質問・結果をタップすると、つながる線を太く表示し、詳細を開きます。余白をタップすると解除します。'
           : '回答を一つずつ選び、開始点から結果までの経路を確認できます。'}
       </p>
       {mode === 'overview' && (

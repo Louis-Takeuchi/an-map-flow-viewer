@@ -16,6 +16,8 @@ export default function OutcomeNode({ data }) {
     >
       <Handle type="target" position={Position.Top} />
       <div className="outcome-label">{data.label}</div>
+      {data.hint && <div className="outcome-hint">{data.hint}</div>}
+      <div className="outcome-id">{data.outcomeId}</div>
     </div>
   );
 }

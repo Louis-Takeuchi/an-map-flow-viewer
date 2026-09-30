@@ -1,0 +1,63 @@
+{
+  "id": "hospital",
+  "protocol_version": "hospital-mvp-0.3",
+  "start": "hp_screen",
+  "questions": {
+    "hp_screen": {
+      "text": "今、次のような症状はありますか？",
+      "subtitle": "受診先の検索より先に確認します",
+      "choices": [
+        { "label": "意識がもうろう・反応が鈍い", "next": "hp_escalate", "data": { "screen": "consciousness" } },
+        { "label": "急な胸の痛み・強い息苦しさ", "next": "hp_escalate", "data": { "screen": "chest_breath" } },
+        { "label": "突然の激しい頭痛・片側の麻痺・ろれつが回らない", "next": "hp_escalate", "data": { "screen": "neuro" } },
+        { "label": "けいれんが続く・大量の出血が止まらない", "next": "hp_escalate", "data": { "screen": "severe" } },
+        { "label": "上記はない", "next": "hp_who", "data": { "screen": "ok" } }
+      ]
+    },
+    "hp_who": {
+      "text": "誰が受診しますか？",
+      "subtitle": "近いものを1つ選んでください",
+      "choices": [
+        { "label": "子ども（0〜12歳）", "next": "hp_symptom", "data": { "who": "child" } },
+        { "label": "自分・大人（13〜64歳）", "next": "hp_symptom", "data": { "who": "adult" } },
+        { "label": "高齢者（65歳以上）", "next": "hp_symptom", "data": { "who": "elderly" } },
+        { "label": "家族・他の人を連れて行く", "next": "hp_symptom", "data": { "who": "family" } }
+      ]
+    },
+    "hp_symptom": {
+      "text": "主な症状は？（いちばん近いもの）",
+      "subtitle": "複数ある場合はいちばん気になるもの",
+      "choices": [
+        { "label": "発熱・風邪症状", "next": "hp_when", "data": { "symptom": "fever" } },
+        { "label": "お腹の症状（嘔吐・下痢・腹痛）", "next": "hp_when", "data": { "symptom": "gi" } },
+        { "label": "ケガ・やけど・出血", "next": "hp_when", "data": { "symptom": "injury" } },
+        { "label": "痛み（頭・腰・関節など）", "next": "hp_when", "data": { "symptom": "pain" } },
+        { "label": "目・耳・鼻・のど", "next": "hp_when", "data": { "symptom": "ent" } },
+        { "label": "その他", "next": "hp_when", "data": { "symptom": "other" } }
+      ]
+    },
+    "hp_when": {
+      "text": "いつ受診したいですか？",
+      "subtitle": "目安で構いません",
+      "choices": [
+        { "label": "今すぐ（1〜3時間以内）", "next": "hp_facility", "data": { "when": "now" } },
+        { "label": "今日中", "next": "hp_facility", "data": { "when": "today" } },
+        { "label": "今日〜今週中", "next": "hp_facility", "data": { "when": "week" } },
+        { "label": "平日の昼間でよい", "next": "hp_facility", "data": { "when": "weekday" } }
+      ]
+    },
+    "hp_facility": {
+      "text": "重視する条件はありますか？（任意）",
+      "subtitle": "当てはまるものを1つ選ぶか、このまま検索へ",
+      "choices": [
+        { "label": "夜間・休日の救急・発熱外来を優先", "next": "hp_done", "data": { "need": "night_emergency" } },
+        { "label": "小児科があるとよい", "next": "hp_done", "data": { "need": "pediatrics" } },
+        { "label": "特にこだわらない", "next": "hp_done", "data": { "need": "any" } }
+      ]
+    }
+  },
+  "outcomes": {
+    "hp_done": { "action": "hospital_search", "label": "近くの医療機関を表示" },
+    "hp_escalate": { "action": "redirect_emergency", "label": "救急の目安へ" }
+  }
+}

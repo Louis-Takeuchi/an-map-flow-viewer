@@ -1,5 +1,5 @@
 import { useState, useCallback, useMemo } from 'react';
-import flowData from '../data/flow_v1.0.json';
+import flowData from '../data/flowData';
 import { FLOW_DEFINITION_BY_KEY } from '../config/flowMetadata';
 
 export function useTraceState(flowKind) {
@@ -38,8 +38,7 @@ export function useTraceState(flowKind) {
         setCurrentNodeId(option.next_node_id);
       } else {
         setOutcome({
-          outcomeId: option.outcome_id || null,
-          triageLevel: option.triage_level || null,
+          ...flowData.outcomes[option.outcome_id],
           optionText: option.option_text,
         });
       }

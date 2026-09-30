@@ -167,13 +167,17 @@ body {
   border-radius: 3px;
   text-transform: uppercase;
   letter-spacing: 0.3px;
+  max-width: 100%;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
 }
 
 /* Outcome node */
 .outcome-node {
   border-radius: 6px;
   padding: 10px 16px;
-  width: 140px;
+  width: 180px;
   text-align: center;
   cursor: pointer;
   border: 2px solid rgba(0, 0, 0, 0.1);
@@ -398,6 +402,29 @@ body {
 }
 
 /* ===== Trace node highlighting ===== */
+/* Highlight widths are compensated for viewport zoom in FlowView. */
+.overview-edge--highlighted .react-flow__edge-path {
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}
+
+.overview-node--selected .question-node,
+.overview-node--selected .outcome-node {
+  border-color: #0891b2 !important;
+  box-shadow: 0 0 0 6px #0891b2, 0 0 0 12px rgba(8, 145, 178, 0.15) !important;
+}
+
+.overview-node--connected .question-node,
+.overview-node--connected .outcome-node {
+  border-color: #0891b2;
+  box-shadow: 0 0 0 3px rgba(8, 145, 178, 0.4);
+}
+
+.overview-node--dimmed .question-node,
+.overview-node--dimmed .outcome-node {
+  opacity: 0.3;
+}
+
 .trace-current .question-node {
   border-color: #0891b2 !important;
   box-shadow: 0 0 0 3px rgba(8, 145, 178, 0.25), 0 2px 8px rgba(8, 145, 178, 0.15);
@@ -692,7 +719,8 @@ body {
 
 .tr-meta {
   font-size: 11px;
-  opacity: 0.5;
+  line-height: 1.8;
+  overflow-wrap: anywhere;
 }
 
 .tr-meta code {
@@ -804,6 +832,36 @@ body {
 }
 
 /* ReactFlow edge labels */
+.source-status {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 6px 16px;
+  padding: 8px 24px;
+  background: #ecfdf5;
+  border-bottom: 1px solid #d1fae5;
+  color: #065f46;
+  font-size: 12px;
+  flex-shrink: 0;
+}
+
+.source-status code { overflow-wrap: anywhere; }
+.source-status a, .detail-section a { color: #047857; }
+.source-status__note { color: #475569; margin-left: auto; }
+.qp-subtitle, .detail-subtitle { font-size: 13px; line-height: 1.6; color: #64748b; margin: 8px 0; }
+.qp-subtitle { text-align: center; }
+.outcome-hint { font-size: 10px; line-height: 1.4; margin-top: 5px; }
+.outcome-id { font-size: 9px; margin-top: 5px; font-family: monospace; }
+.detail-row { flex-wrap: wrap; }
+.detail-row code, .detail-section code { overflow-wrap: anywhere; }
+.detail-section { font-size: 13px; line-height: 1.6; }
+.options-scroll { overflow-x: auto; }
+.choice-data { padding: 8px 0; border-bottom: 1px solid #e2e8f0; }
+.choice-data code { font-size: 11px; }
+.tr-scope { font-size: 12px; line-height: 1.7; }
+.qp, .tr { height: auto; min-height: 100%; }
+.flow-container, .trace-layout, .trace-graph { min-height: 0; min-width: 0; }
+
 .react-flow__edge-text {
   font-size: 10px !important;
 }
@@ -838,7 +896,8 @@ body {
   }
 
   .app-header,
-  .viewer-guide {
+  .viewer-guide,
+  .source-status {
     padding-left: 12px;
     padding-right: 12px;
   }

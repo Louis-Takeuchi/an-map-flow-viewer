@@ -34,6 +34,10 @@ export default function DetailPanel({ node, onClose }) {
             <span className="detail-label">ラベル</span>
             <span>{d.label}</span>
           </div>
+          {d.hint && <div className="detail-section"><h4>案内文</h4><p>{d.hint}</p></div>}
+          {d.action && <div className="detail-section"><h4>action</h4><code>{d.action}</code></div>}
+          {d.reason && <div className="detail-section"><h4>reason</h4><code>{d.reason}</code></div>}
+          <div className="detail-section"><h4>protocol_version</h4><code>{d.protocolVersion}</code></div>
           <div className="detail-row">
             <span className="detail-label">トリアージ</span>
             <span
@@ -65,16 +69,27 @@ export default function DetailPanel({ node, onClose }) {
       </div>
       <div className="panel-body">
         <div className="detail-row">
-          <span className="detail-label">response_type</span>
-          <code>{d.responseType}</code>
+          <span className="detail-label">protocol</span>
+          <code>{d.protocolVersion}</code>
         </div>
         <div className="detail-section">
           <h4>質問文</h4>
           <p className="question-full">{d.questionText}</p>
+          {d.subtitle && <p className="detail-subtitle">{d.subtitle}</p>}
         </div>
+        {d.evidence && (
+          <div className="detail-section">
+            <h4>公開JSONに記載された出典</h4>
+            <p>{/^https?:\/\//.test(d.evidence.url || '')
+              ? <a href={d.evidence.url} target="_blank" rel="noreferrer">{d.evidence.source}</a>
+              : d.evidence.source}</p>
+            {d.evidence.section && <p>{d.evidence.section}</p>}
+            {d.evidence.checked_at && <p>出典の確認日: {d.evidence.checked_at}</p>}
+          </div>
+        )}
         <div className="detail-section">
           <h4>選択肢</h4>
-          <table className="options-table">
+          <div className="options-scroll"><table className="options-table">
             <thead>
               <tr>
                 <th>選択肢</th>
@@ -112,7 +127,16 @@ export default function DetailPanel({ node, onClose }) {
                 );
               })}
             </tbody>
-          </table>
+          </table></div>
+        </div>
+        <div className="detail-section">
+          <h4>選択肢の data（公開JSON）</h4>
+          {d.options.map((opt) => (
+            <div className="choice-data" key={opt.option_id}>
+              <p>{opt.option_text}</p>
+              <code>{JSON.stringify(opt.data)}</code>
+            </div>
+          ))}
         </div>
       </div>
     </div>

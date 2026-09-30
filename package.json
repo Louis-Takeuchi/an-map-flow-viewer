@@ -11,7 +11,10 @@
     "dev": "vite",
     "build": "vite build",
     "preview": "vite preview",
-    "validate:flows": "node scripts/validate-flows.mjs"
+    "validate:flows": "node scripts/validate-flows.mjs",
+    "check:flows": "node scripts/sync-flows.mjs --check",
+    "sync:flows": "node scripts/sync-flows.mjs --write",
+    "test": "node --test scripts/*.test.mjs"
   },
   "dependencies": {
     "@dagrejs/dagre": "^1.1.4",

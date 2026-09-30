@@ -1,10 +1,7 @@
 import { useMemo } from 'react';
 import Dagre from '@dagrejs/dagre';
-import flowData from '../data/flow_v1.0.json';
-import {
-  OUTCOME_LABELS,
-  getOutcomeEdgeColor,
-} from '../config/flowPresentation';
+import flowData from '../data/flowData';
+import { getOutcomeEdgeColor } from '../config/flowPresentation';
 
 function truncate(text, max = 15) {
   return text.length > max ? text.slice(0, max) + '…' : text;
@@ -26,6 +23,9 @@ function buildGraph(flowKind) {
         responseType: node.response_type,
         options: node.options,
         flowKind: node.flow_kind,
+        subtitle: node.subtitle,
+        evidence: node.evidence,
+        protocolVersion: node.protocol_version,
       },
       position: { x: 0, y: 0 },
     });
@@ -42,7 +42,7 @@ function buildGraph(flowKind) {
         });
       } else if (opt.outcome_id) {
         if (!outcomeSet.has(opt.outcome_id)) {
-          outcomeSet.set(opt.outcome_id, opt.triage_level || null);
+          outcomeSet.set(opt.outcome_id, flowData.outcomes[opt.outcome_id]);
         }
         const outcomeColor = getOutcomeEdgeColor(opt.outcome_id, opt.triage_level);
         rfEdges.push({
@@ -57,14 +57,12 @@ function buildGraph(flowKind) {
     }
   }
 
-  for (const [outcomeId, triageLevel] of outcomeSet) {
+  for (const [outcomeId, outcome] of outcomeSet) {
     rfNodes.push({
       id: `outcome_${outcomeId}`,
       type: 'outcome',
       data: {
-        outcomeId,
-        label: OUTCOME_LABELS[outcomeId] || outcomeId,
-        triageLevel,
+        ...outcome,
       },
       position: { x: 0, y: 0 },
     });
@@ -78,8 +76,8 @@ function applyDagreLayout(nodes, edges) {
   g.setGraph({ rankdir: 'TB', nodesep: 60, ranksep: 100 });
 
   for (const node of nodes) {
-    const width = node.type === 'outcome' ? 140 : 220;
-    const height = node.type === 'outcome' ? 50 : 80;
+    const width = node.type === 'outcome' ? 180 : 220;
+    const height = node.type === 'outcome' ? 110 : 100;
     g.setNode(node.id, { width, height });
   }
 
@@ -91,8 +89,8 @@ function applyDagreLayout(nodes, edges) {
 
   return nodes.map((node) => {
     const pos = g.node(node.id);
-    const width = node.type === 'outcome' ? 140 : 220;
-    const height = node.type === 'outcome' ? 50 : 80;
+    const width = node.type === 'outcome' ? 180 : 220;
+    const height = node.type === 'outcome' ? 110 : 100;
     return {
       ...node,
       position: {
